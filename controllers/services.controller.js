@@ -1,6 +1,7 @@
 const { Service } = require("../models/Service");
 const asyncWrapper = require("../middlewares/asyncWrapper");
 const appError = require("../utils/appError");
+const getData = require("../utils/getData");
 
 const getServices = asyncWrapper(async (req, res, next) => {
   const filter = {};
@@ -13,29 +14,19 @@ const getServices = asyncWrapper(async (req, res, next) => {
   if (req.query.isActive) {
     filter.isActive = req.query.isActive === "true"; // Convert string to boolean
   }
-  const limit = parseInt(req.query.limit) || 10;
-  const page = parseInt(req.query.page) || 1;
-  const skip = (page - 1) * limit;
+  const populateOptions = { path: "provider", select: "name specialization" };
+  const [data, pagination] = await getData(
+    req,
+    filter,
+    Service,
+    populateOptions,
+  );
 
-  const [services, totalServices] = await Promise.all([
-    Service.find(filter, { __v: 0 })
-      .populate("provider", "name specialization")
-      .limit(limit)
-      .skip(skip),
-    Service.countDocuments(filter),
-  ]);
-  const totalPages = Math.ceil(totalServices / limit);
   res.status(200).json({
     status: "success",
-    pagination: {
-      totalServices,
-      totalPages,
-      isNextPage: page < totalPages,
-      isPreviousPage: page > 1,
-      currentPage: page,
-    },
-    results: services.length,
-    data: { services },
+    pagination: pagination,
+    results: data.length,
+    data: { services: data },
   });
 });
 
@@ -107,16 +98,14 @@ const toggleServiceStatus = asyncWrapper(async (req, res, next) => {
   }
   service.isActive = !service.isActive;
   await service.save();
-  res
-    .status(200)
-    .json({
-      status: "success",
-      message: service.isActive
-        ? "Service is now active"
-        : "Service has been stopped",
-      isActive: service.isActive,
-      data: null,
-    });
+  res.status(200).json({
+    status: "success",
+    message: service.isActive
+      ? "Service is now active"
+      : "Service has been stopped",
+    isActive: service.isActive,
+    data: null,
+  });
 });
 
 module.exports = {

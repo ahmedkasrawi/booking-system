@@ -30,7 +30,7 @@ app.use((req, res) => {
 // global error handler
 app.use((err, req, res, next) => {
   if (err.isOperational) {
-    logger.warn(`[${statusCode}] ${err.message} | URL: ${req.originalUrl}`);
+    logger.warn(`[${err.statusCode || 500}] ${err.message} | URL: ${req.originalUrl}`);
   }else {
     logger.error(`[500] ${err.message} | URL: ${req.originalUrl}`, {
       stack: err.stack,

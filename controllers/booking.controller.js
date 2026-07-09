@@ -6,100 +6,73 @@ const bookingService = require("../services/bookingService")
 // admin only
 const getBookings = asyncWrapper(async (req, res, next) => {
   const filter = {};
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
   if (req.query.status) {
     filter.status = req.query.status;
   }
-  const [totalBookings, bookings] = await Promise.all([
-    Booking.countDocuments(filter),
-    Booking.find(filter)
-      .sort("-createdAt")
-      .populate("client", "name email")
-      .populate("provider", "name email")
-      .populate("service", "title")
-      .skip(skip)
-      .limit(limit),
-  ]);
-  const totalPages = Math.ceil(totalBookings / limit);
+  const populateOptions = [
+    { path: "client", select: "name email" },
+    { path: "provider", select: "name email" },
+    { path: "service", select: "title" },
+  ];
+  const [data, pagination] = await getData(
+    req,
+    filter,
+    Booking,
+    populateOptions,
+  );
   res.status(200).json({
     status: "success",
-    pagination: {
-      totalBookings,
-      totalPages,
-      currentPage: page,
-      isPreviousPage: page > 1,
-      isNextPage: page < totalPages,
-    },
-    results: bookings.length,
-    data: { bookings },
+    pagination,
+    results: data.length,
+    data: { bookings: data },
   });
 });
 // client only
 const getMyBookings = asyncWrapper(async (req, res, next) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
   const filter = { client: req.user.id };
   if (req.query.status) {
     filter.status = req.query.status;
   }
-  const [totalBookings, bookings] = await Promise.all([
-    Booking.countDocuments(filter),
-    Booking.find(filter)
-      .sort("-createdAt")
-      .populate("service", "title")
-      .populate("provider", "name email")
-      .skip(skip)
-      .limit(limit),
-  ]);
-  const totalPages = Math.ceil(totalBookings / limit);
+  const populateOptions = [
+    { path: "service", select: "title" },
+    { path: "provider", select: "name email" },
+  ];
+  const [data, pagination] = await getData(
+    req,
+    filter,
+    Booking,
+    populateOptions,
+  );
+  
   res.status(200).json({
     status: "success",
-    results: bookings.length,
-    pagination: {
-      totalBookings,
-      totalPages,
-      currentPage: page,
-      isPreviousPage: page > 1,
-      isNextPage: page < totalPages,
-    },
-    data: { bookings },
+    results: data.length,
+    pagination,
+    data: { bookings: data },
     message: "My bookings retrieved successfully",
   });
 });
 // provider only
 const getProviderBookings = asyncWrapper(async (req, res, next) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
   const filter = { provider: req.user.id };
   if (req.query.status) {
     filter.status = req.query.status;
   }
-  const [totalBookings, bookings] = await Promise.all([
-    Booking.countDocuments(filter),
-    Booking.find(filter)
-      .sort("-createdAt")
-      .populate("client", "name")
-      .populate("service", "title")
-      .skip(skip)
-      .limit(limit),
-  ]);
-  const totalPages = Math.ceil(totalBookings / limit);
-  
+  const populateOptions = [
+    { path: "service", select: "title" },
+    { path: "client", select: "name" },
+  ];
+  const [data, pagination] = await getData(
+    req,
+    filter,
+    Booking,
+    populateOptions,
+  );
   res.status(200).json({
     status: "success",
-    results: bookings.length,
-    pagination: {
-      totalBookings,
-      totalPages,
-      currentPage: page,
-      isPreviousPage: page > 1,
-      isNextPage: page < totalPages,
-    },
-    data: { bookings },
+    results: data.length,
+    pagination,
+    data: { bookings: data },
     message: "Provider bookings retrieved successfully",
   });
 });
@@ -108,8 +81,7 @@ const addBooking = asyncWrapper(async (req, res, next) => {
   const booking = await bookingService.makeNewBooking(req.body, req.user.id);
   res.status(201).json({ status: "success", data: { booking } });
 });
-
-// 
+//
 const getAvailableSlots = asyncWrapper(async (req, res, next) => {
   const { providerId, date } = req.query;
 

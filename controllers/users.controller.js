@@ -3,33 +3,17 @@ const asyncWrapper = require("../middlewares/asyncWrapper");
 
 const appError = require("../utils/appError");
 const { generateToken } = require("../utils/authUtil");
+const getData = require("../utils/getData");
 
 const getAllUsers = asyncWrapper(async (req, res) => {
   const filter = {}; // filter by role
   if (req.query.role) filter.role = req.query.role;
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
-
-  const [users, totalUsers] = await Promise.all([
-    User.find(filter)
-      .limit(limit)
-      .skip(skip),
-    User.countDocuments(filter),
-  ]);
-
-  const totalPages = Math.ceil(totalUsers / limit);
+  const [data, pagination] = await getData(req, filter, User);
   res.status(200).json({
     status: "success",
-    results: users.length,
-    pagination: {
-      totalUsers,
-      totalPages,
-      currentPage: page,
-      hasNextPage: page < totalPages,
-      hasPrevPage: page > 1,
-    },
-    data: { users },
+    results: data.length,
+    pagination: pagination,
+    data: { users: data },
   });
 });
 
