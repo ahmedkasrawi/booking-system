@@ -3,17 +3,24 @@ const appError = require("../utils/appError");
 const { Booking } = require("../models/Booking");
 const { Service } = require("../models/Service");
 const bookingService = require("../services/bookingService")
-// admin only
+// admin and provider only
 const getBookings = asyncWrapper(async (req, res, next) => {
-  const filter = {};
-  if (req.query.status) {
-    filter.status = req.query.status;
-  }
-  const populateOptions = [
+  let filter = {};
+  let populateOptions = [
     { path: "client", select: "name email" },
     { path: "provider", select: "name email" },
     { path: "service", select: "title" },
   ];
+  if(req.user.role === "provider"){
+    filter = { provider: req.user.id };
+    populateOptions = [
+      { path: "service", select: "title" },
+      { path: "client", select: "name" },
+    ];
+  }
+  if (req.query.status) {
+    filter.status = req.query.status;
+  }
   const [data, pagination] = await getData(
     req,
     filter,
@@ -53,29 +60,7 @@ const getMyBookings = asyncWrapper(async (req, res, next) => {
   });
 });
 // provider only
-const getProviderBookings = asyncWrapper(async (req, res, next) => {
-  const filter = { provider: req.user.id };
-  if (req.query.status) {
-    filter.status = req.query.status;
-  }
-  const populateOptions = [
-    { path: "service", select: "title" },
-    { path: "client", select: "name" },
-  ];
-  const [data, pagination] = await getData(
-    req,
-    filter,
-    Booking,
-    populateOptions,
-  );
-  res.status(200).json({
-    status: "success",
-    results: data.length,
-    pagination,
-    data: { bookings: data },
-    message: "Provider bookings retrieved successfully",
-  });
-});
+
 // client only
 const addBooking = asyncWrapper(async (req, res, next) => {
   const booking = await bookingService.makeNewBooking(req.body, req.user.id);
@@ -175,7 +160,6 @@ const deleteBooking = asyncWrapper(async (req, res, next) => {
 
 module.exports = {
   getBookings,
-  getProviderBookings,
   getAvailableSlots,
   getMyBookings,
   addBooking,

@@ -9,7 +9,6 @@ const {
 } = require("../validators/bookingValidator");
 const {
   getBookings,
-  getProviderBookings,
   getMyBookings,
   addBooking,
   updateBookingStatus,
@@ -17,7 +16,6 @@ const {
   deleteBooking,
   getAvailableSlots,
 } = require("../controllers/booking.controller");
-
 
 // client only
 router.post(
@@ -30,14 +28,8 @@ router.get("/my", verifyToken, getMyBookings);
 router.patch("/cancel/:id", verifyToken, cancelMyBooking);
 
 // admin and provider
-router.get(
-  "/provider",
-  verifyToken,
-  allowedTo("provider"),
-  getProviderBookings,
-);
 router.get("/available-slots", getAvailableSlots);
-router.get("/", verifyToken, allowedTo("admin"), getBookings);
+router.get("/", verifyToken, allowedTo("admin", "provider"), getBookings);
 router
   .route("/:id")
   .patch(

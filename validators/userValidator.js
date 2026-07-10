@@ -12,7 +12,6 @@ const registerSchema = Joi.object({
       "string.min": "user name should be more than 3 characters",
       "string.max": "user name should be less than 20 characters",
       "string.pattern.base": "name must only contain letters",
-      "string.pattern.base": "name must only contain letters",
       "any.required": "user name is required",
     }),
   email: Joi.string().trim().email().required().messages({
@@ -22,7 +21,7 @@ const registerSchema = Joi.object({
   }),
   password: Joi.string()
     .min(8)
-    // .pattern(new RegExp("^(?=.*[a-zA-Z])(?=.*[0-9])"))
+    .pattern(new RegExp("^(?=.*[a-zA-Z])(?=.*[0-9])"))
     .required()
     .messages({
       "string.empty": "please enter the password",
