@@ -16,6 +16,13 @@ const getAllUsers = asyncWrapper(async (req, res) => {
     data: { users: data },
   });
 });
+const getMe = asyncWrapper(async (req, res) => {
+  const data = await User.findById(req.user.id)
+  res.status(200).json({
+    status: "success",
+    data: { user: data },
+  });
+});
 
 const registerUser = asyncWrapper(async (req, res, next) => {
   const { name, email, password, role, specialization, bio } = req.body;
@@ -75,6 +82,7 @@ const loginUser = asyncWrapper(async (req, res, next) => {
 
 module.exports = {
   getAllUsers,
+  getMe,
   registerUser,
   loginUser,
 };
