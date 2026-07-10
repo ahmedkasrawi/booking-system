@@ -3,7 +3,7 @@ const appError = require("../utils/appError");
 
 module.exports = (req, res, next) => {
   const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1];
+  const token = authHeader?.split(" ")[1];
 
   if (!token) {
     return next(
@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (err) {
-    return next(
+    next(
       new appError("Invalid or expired token", 401)
     );
   }
