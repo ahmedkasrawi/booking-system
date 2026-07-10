@@ -1,38 +1,44 @@
 const Joi = require("joi");
-const mongoose = require("mongoose");
-// Define a regular expression pattern for validating MongoDB ObjectId
-const objectIdPattern = /^[0-9a-fA-F]{24}$/;
-// mongoose.Types.ObjectId.isValid;
 
-const createOrderSchema = Joi.object({
-  orderItems: Joi.array()
-    .items(
-      Joi.object({
-        product: Joi.string().pattern(objectIdPattern).required().messages({
-          "string.empty": "Product ID cannot be empty.",
-          "string.pattern.base": "Invalid Product ID format.",
-          "any.required": "Product ID is required for each item.",
-        }),
-        quantity: Joi.number().integer().positive().min(1).required().messages({
-          //quantity
-          "number.base": "Quantity must be a number.",
-          "number.integer": "Quantity must be an integer.",
-          "number.positive": "Quantity must be a positive number.",
-          "number.min": "Quantity must be at least 1.",
-          "any.required": "Quantity is required for each item.",
-        }),
-      }),
-    )
-    .min(1)
+
+const objectIdPattern = /^[0-9a-fA-F]{24}$/;
+const timeSlotPattern = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+
+const createBookingSchema = Joi.object({
+  provider: Joi.string().pattern(objectIdPattern).required().messages({
+    "string.pattern.base": "Invalid provider ID.",
+    "any.required": "Provider ID is required.",
+  }),
+
+  service: Joi.string().pattern(objectIdPattern).required().messages({
+    "string.pattern.base": "Invalid service ID.",
+    "any.required": "Service ID is required.",
+  }),
+
+  date: Joi.date().iso().required().messages({
+    "date.base": "Please provide a valid date.",
+    "date.format": "Date must be in ISO format (YYYY-MM-DD).",
+    "any.required": "Booking date is required.",
+  }),
+
+  timeSlot: Joi.string().pattern(timeSlotPattern).required().messages({
+    "string.pattern.base": "Time must be in 24-hour format (e.g., 14:30).",
+    "any.required": "Time slot is required.",
+  }),
+});
+
+// 2. فحص تحديث حالة الحجز (من طرف المستشار أو الإدارة)
+const updateBookingStatusSchema = Joi.object({
+  status: Joi.string()
+    .valid("pending", "confirmed", "cancelled", "completed")
     .required()
     .messages({
-      "array.base": "Order items must be provided as an array.",
-      "array.min": "Your order must contain at least one item.",
-      "any.required": "Order items are required.",
+      "any.only": "Status must be pending, confirmed, cancelled, or completed.",
+      "any.required": "Status is required for update.",
     }),
-    
 });
 
 module.exports = {
-  createOrderSchema,
+  createBookingSchema,
+  updateBookingStatusSchema,
 };

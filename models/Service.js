@@ -22,6 +22,8 @@ const serviceSchema = new schema(
     },
     duration: {
       type: Number,
+      enum: [30, 60],
+      default: 60,
       required: true,
     },
     category: {

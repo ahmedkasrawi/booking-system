@@ -57,9 +57,6 @@ const bookingSchema = new schema(
   },
 );
 
-// 🛡️ خط الحماية الأخير (Compound Index)
-// هذا السطر يمنع قاعدة البيانات نهائياً من تكرار نفس الحجز (نفس مقدم الخدمة + نفس اليوم + نفس الساعة)
-// حتى لو الـ Controller فشل في التشيك لأي سبب (كضغط طلبات متزامنة Concurrency)، الـ DB هترفض العملية.
 bookingSchema.index(
   { provider: 1, date: 1, timeSlot: 1 },
   {
