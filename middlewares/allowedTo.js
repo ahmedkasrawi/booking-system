@@ -1,6 +1,6 @@
 const appError = require("../utils/appError");
 
-module.exports = (...roles) => {
+const allowedTo = (...roles) => {
   return (req, res, next) => {
     if (!req.user || !req.user.role) {
       return next(
@@ -18,3 +18,5 @@ module.exports = (...roles) => {
     next();
   };
 };
+
+module.exports = allowedTo

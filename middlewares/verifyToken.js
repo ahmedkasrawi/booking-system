@@ -1,14 +1,12 @@
 const jwt = require("jsonwebtoken");
 const appError = require("../utils/appError");
 
-module.exports = (req, res, next) => {
+const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
   const token = authHeader?.split(" ")[1];
 
   if (!token) {
-    return next(
-      new appError("Unauthorized, token not provided", 401)
-    );
+    return next(new appError("Unauthorized, token not provided", 401));
   }
 
   try {
@@ -16,8 +14,8 @@ module.exports = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (err) {
-    next(
-      new appError("Invalid or expired token", 401)
-    );
+    next(new appError("Invalid or expired token", 401));
   }
 };
+
+module.exports = verifyToken;
