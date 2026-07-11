@@ -21,7 +21,7 @@ const registerSchema = Joi.object({
   }),
   password: Joi.string()
     .min(8)
-    .pattern(new RegExp("^(?=.*[a-zA-Z])(?=.*[0-9])"))
+    .pattern(/^(?=.*[a-zA-Z])(?=.*\d)/)
     .required()
     .messages({
       "string.empty": "please enter the password",

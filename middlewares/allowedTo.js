@@ -2,7 +2,7 @@ const appError = require("../utils/appError");
 
 const allowedTo = (...roles) => {
   return (req, res, next) => {
-    if (!req.user || !req.user.role) {
+    if (!req.user?.role) {
       return next(
         new appError("Unauthorized, user role not found", 401)
       );

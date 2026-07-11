@@ -2,7 +2,7 @@ const Joi = require("joi");
 
 
 const objectIdPattern = /^[0-9a-fA-F]{24}$/;
-const timeSlotPattern = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+const timeSlotPattern = /^([0-1]?\d|2[0-3]):[0-5]\d$/;
 
 const createBookingSchema = Joi.object({
   provider: Joi.string().pattern(objectIdPattern).required().messages({
