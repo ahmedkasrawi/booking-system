@@ -4,7 +4,7 @@ const appError = require("../utils/appError");
 
 // make a new booking
 const makeNewBooking = async (bookingData, clientId) => {
-  const { service, provider, date, timeSlot } = bookingData;
+  const { service, date, timeSlot } = bookingData;
 
   // 1. check if the booking date is in the past
   const bookingDate = new Date(date);
@@ -16,7 +16,6 @@ const makeNewBooking = async (bookingData, clientId) => {
   // 2. check the validity of the service and its association with the service provider and ensure it is active
   const serviceObj = await Service.findOne({
     _id: service,
-    provider: provider,
     isActive: true,
   });
 
@@ -26,7 +25,7 @@ const makeNewBooking = async (bookingData, clientId) => {
 
   // 3. prevent double booking
   const exist = await Booking.findOne({
-    provider,
+    provider: serviceObj.provider,
     date: bookingDate,
     timeSlot,
     status: { $in: ["pending", "confirmed"] },
@@ -42,7 +41,7 @@ const makeNewBooking = async (bookingData, clientId) => {
   // 4. create the booking and freeze the price and duration for future protection
   const booking = await Booking.create({
     client: clientId,
-    provider,
+    provider: serviceObj.provider,
     service,
     date,
     timeSlot,

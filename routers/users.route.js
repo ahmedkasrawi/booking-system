@@ -4,6 +4,7 @@ const verifyToken = require("../middlewares/verifyToken");
 const allowTo = require("../middlewares/allowedTo");
 const { registerSchema, loginSchema } = require("../validators/userValidator");
 const validate = require("../middlewares/validateMiddleware")
+const { roles } = require("../constants/index");
 const {
   getAllUsers,
   registerUser,
@@ -11,7 +12,7 @@ const {
   getMe,
 } = require("../controllers/users.controller");
 
-router.get("/users", verifyToken, allowTo("admin"), getAllUsers);
+router.get("/users", verifyToken, allowTo(roles.admin), getAllUsers);
 router.post("/register", validate(registerSchema), registerUser);
 router.post("/login", validate(loginSchema), loginUser);
 router.get("/me", verifyToken, getMe);

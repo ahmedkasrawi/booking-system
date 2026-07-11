@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-
+const {roles} = require("../constants/index")
 
 const schema = mongoose.Schema;
 
@@ -26,10 +26,9 @@ const userSchema = new schema(
     role: {
       type: String,
       required: true,
-      enum: ["admin", "user", "provider"],
-      default: "user",
+      enum: [roles.user, roles.provider, roles.admin],
+      default: roles.user,
     },
-    // optional field for providers to store their services
     specialization: {
       type: String,
     },
@@ -54,7 +53,6 @@ userSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-// 2. ميثود مخصصة لمقارنة الباسورد عند تسجيل الدخول
 userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword,

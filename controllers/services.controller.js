@@ -69,22 +69,6 @@ const updateService = asyncWrapper(async (req, res, next) => {
   res.status(200).json({ status: "success", data: { service } });
 });
 
-const deleteService = asyncWrapper(async (req, res, next) => {
-  let service = await Service.findById(req.params.id);
-  if (!service) {
-    return next(new appError("Service not found", 404));
-  }
-  if (
-    service.provider.toString() !== req.user.id &&
-    req.user.role !== "admin"
-  ) {
-    return next(new appError("Not authorized to delete this service", 403));
-  }
-  service = await Service.findByIdAndDelete(req.params.id);
-
-  res.status(200).json({ status: "success", data: null });
-});
-
 const toggleServiceStatus = asyncWrapper(async (req, res, next) => {
   const service = await Service.findById(req.params.id);
   if (!service) {
@@ -113,6 +97,5 @@ module.exports = {
   addService,
   getOneService,
   updateService,
-  deleteService,
   toggleServiceStatus,
 };

@@ -1,11 +1,13 @@
 module.exports = {
-  ROLES: {
-    ADMIN: "admin",
-    CUSTOMER: "customer",
+  roles: {
+    admin: "admin",
+    user: "user",
+    provider: "provider",
   },
-  ORDER_STATUS: {
-    PENDING: "Pending",
-    SHIPPED: "Shipped",
-    DELIVERED: "Delivered",
+  booking_status: {
+    pending: "pending",
+    confirmed: "confirmed",
+    cancelled: "cancelled",
+    completed: "completed",
   },
 };

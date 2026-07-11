@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
-
+const { booking_status } = require("../constants/index");
 const bookingSchema = new schema(
   {
     client: {
@@ -37,8 +37,13 @@ const bookingSchema = new schema(
     },
     status: {
       type: String,
-      enum: ["pending", "confirmed", "cancelled", "completed"],
-      default: "pending",
+      enum: [
+        booking_status.pending,
+        booking_status.confirmed,
+        booking_status.cancelled,
+        booking_status.completed,
+      ],
+      default: booking_status.pending,
       required: true,
     },
     // ميزة إضافية: تتبع حالة الدفع لربطها ببوابات الدفع لاحقاً
@@ -62,7 +67,7 @@ bookingSchema.index(
   {
     unique: true,
     partialFilterExpression: {
-      status: { $in: ["pending", "confirmed"] },
+      status: { $in: [booking_status.pending, booking_status.confirmed] },
     },
   },
 );

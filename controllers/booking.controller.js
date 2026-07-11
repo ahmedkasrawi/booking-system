@@ -3,6 +3,7 @@ const appError = require("../utils/appError");
 const { Booking } = require("../models/Booking");
 const { Service } = require("../models/Service");
 const bookingService = require("../services/bookingService")
+const { roles } = require("../constants/index")
 // admin and provider only
 const getBookings = asyncWrapper(async (req, res, next) => {
   let filter = {};
@@ -11,7 +12,7 @@ const getBookings = asyncWrapper(async (req, res, next) => {
     { path: "provider", select: "name email" },
     { path: "service", select: "title" },
   ];
-  if(req.user.role === "provider"){
+  if(req.user.role === roles.provider){
     filter = { provider: req.user.id };
     populateOptions = [
       { path: "service", select: "title" },
@@ -59,7 +60,6 @@ const getMyBookings = asyncWrapper(async (req, res, next) => {
     message: "My bookings retrieved successfully",
   });
 });
-// provider only
 
 // client only
 const addBooking = asyncWrapper(async (req, res, next) => {

@@ -4,12 +4,12 @@ const allowTo = require("../middlewares/allowedTo")
 const verifyToken = require("../middlewares/verifyToken")
 const validateMiddleware = require("../middlewares/validateMiddleware");
 const { createServiceSchema, updateServiceSchema } = require("../validators/serviceValidator")
+const { roles } = require("../constants/index");
 const {
   getServices,
   addService,
   getOneService,
   updateService,
-  deleteService,
   toggleServiceStatus,
 } = require("../controllers/services.controller");
 
@@ -18,7 +18,7 @@ router
   .get(getServices)
   .post(
     verifyToken,
-    allowTo("admin", "provider"),
+    allowTo(roles.provider, roles.admin),
     validateMiddleware(createServiceSchema),
     addService,
   );
@@ -28,12 +28,13 @@ router
   .get(getOneService)
   .patch(
     verifyToken,
-    allowTo("admin", "provider"),
+    allowTo(roles.provider, roles.admin),
     validateMiddleware(updateServiceSchema),
     updateService,
   )
-  .delete(verifyToken, allowTo("admin", "provider"), deleteService);
 
-router.route("/active/:id").patch(verifyToken,allowTo("admin","provider"),toggleServiceStatus);
+router
+  .route("/active/:id")
+  .patch(verifyToken, allowTo(roles.provider, roles.admin), toggleServiceStatus);
 
 module.exports = router;

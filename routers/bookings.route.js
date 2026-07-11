@@ -3,6 +3,7 @@ const router = express.Router();
 const verifyToken = require("../middlewares/verifyToken");
 const allowedTo = require("../middlewares/allowedTo");
 const validateMiddleware = require("../middlewares/validateMiddleware");
+const { roles } = require("../constants/index");
 const {
   createBookingSchema,
   updateBookingStatusSchema,
@@ -29,15 +30,19 @@ router.patch("/cancel/:id", verifyToken, cancelMyBooking);
 
 // admin and provider
 router.get("/available-slots", getAvailableSlots);
-router.get("/", verifyToken, allowedTo("admin", "provider"), getBookings);
+router.get(
+  "/",
+  verifyToken,
+  allowedTo(roles.admin, roles.provider),
+  getBookings,
+);
 router
   .route("/:id")
   .patch(
     verifyToken,
-    allowedTo("admin", "provider"),
+    allowedTo(roles.admin, roles.provider),
     validateMiddleware(updateBookingStatusSchema),
     updateBookingStatus,
-  )
-  .delete(verifyToken, allowedTo("admin"), deleteBooking);
+  );
 
 module.exports = router;
