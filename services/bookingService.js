@@ -91,10 +91,10 @@ const getAvailableSlots = async (providerId, date) => {
     status: { $in: ["pending", "confirmed"] },
   }).select("timeSlot");
 
-  const reservedTimes = bookedSlots.map((booking) => booking.timeSlot);
+  const reservedTimes = new Set(bookedSlots.map((booking) => booking.timeSlot));
 
   // 4. فلترة المواعيد المحجوزة
-  let availableSlots = allSlots.filter((slot) => !reservedTimes.includes(slot));
+  let availableSlots = allSlots.filter((slot) => !reservedTimes.has(slot));
 
   // 5. إذا كان الاستعلام عن اليوم الحالي، قم بإخفاء المواعيد التي مرت
   if (queryDate.getTime() === today.getTime()) {
