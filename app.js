@@ -9,14 +9,30 @@ const usersRouter = require("./routers/users.route");
 const servicesRouter = require("./routers/services.route");
 const bookingsRouter = require("./routers/bookings.route");
 const logger = require("./utils/logger");
-const mongoSanitize = require("express-mongo-sanitize")
+const sanitize = require("mongo-sanitize");
 const app = express();
 
 app.use(morgan("dev"));
 app.use(helmet());
-app.use(cors({ origin: "http://localhost:5173/" , credentials:true}));
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json({ limit: "10kb" }));
-app.use(mongoSanitize({allowDots:true})); // happen error because it before, let your eyes on it
+app.use((req, res, next) => {
+  // تنظيف الـ body والـ params بشكل طبيعي
+  if (req.body) req.body = sanitize(req.body);
+  if (req.params) req.params = sanitize(req.params);
+
+  // تنظيف الـ query بأمان بدون تغيير مرجع الكائن (تجنب خطأ الـ Getter)
+  if (req.query) {
+    const cleanQuery = sanitize(req.query);
+    for (const key in req.query) {
+      delete req.query[key]; // حذف المفاتيح القديمة
+    }
+    Object.assign(req.query, cleanQuery); // نسخ البيانات المطهّرة داخل الكائن الأصلي
+  }
+
+  next();
+});
+
 app.use(hpp());
 
 const limiter = rateLimit(config.theRateLimit);
@@ -32,8 +48,10 @@ app.use((req, res) => {
 // global error handler
 app.use((err, req, res, next) => {
   if (err.isOperational) {
-    logger.warn(`[${err.statusCode || 500}] ${err.message} | URL: ${req.originalUrl}`);
-  }else {
+    logger.warn(
+      `[${err.statusCode || 500}] ${err.message} | URL: ${req.originalUrl}`,
+    );
+  } else {
     logger.error(`[500] ${err.message} | URL: ${req.originalUrl}`, {
       stack: err.stack,
     });
@@ -43,7 +61,6 @@ app.use((err, req, res, next) => {
     msg: err.message,
     stack: config.nodeEnv === "development" ? err.stack : undefined,
   });
-  
 });
 
 module.exports = app;

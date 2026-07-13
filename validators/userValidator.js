@@ -30,11 +30,6 @@ const registerSchema = Joi.object({
         "password must contain at least one letter and one number",
       "any.required": "user password is required",
     }),
-
-  passwordConfirm: Joi.any().equal(Joi.ref("password")).required().messages({
-    "any.only": "passwords do not match",
-    "any.required": "please confirm your password",
-  }),
 });
 
 const loginSchema = Joi.object({
