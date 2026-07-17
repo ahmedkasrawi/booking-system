@@ -30,6 +30,9 @@ const serviceSchema = new schema(
       type: String, // : "Medical", "Salon", "Consulting"
       required: true,
     },
+    image: {
+      type: String,
+    },
     isActive: {
       type: Boolean,
       default: true, // تمكنك من إيقاف حجز خدمة مؤقتاً دون حذفها

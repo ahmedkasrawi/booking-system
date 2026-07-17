@@ -6,15 +6,15 @@ const { registerSchema, loginSchema } = require("../validators/userValidator");
 const validate = require("../middlewares/validateMiddleware")
 const { roles } = require("../constants/index");
 const {
-  getAllUsers,
   registerUser,
   loginUser,
   getMe,
+  userToProvider,
 } = require("../controllers/users.controller");
 
-router.get("/users", verifyToken, allowTo(roles.admin), getAllUsers);
 router.post("/register", validate(registerSchema), registerUser);
 router.post("/login", validate(loginSchema), loginUser);
+router.patch("/provider",verifyToken, allowTo("user"), userToProvider);
 router.get("/me", verifyToken, getMe);
 
 module.exports = router;

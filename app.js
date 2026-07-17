@@ -3,15 +3,17 @@ const helmet = require("helmet");
 const cors = require("cors");
 const hpp = require("hpp");
 const morgan = require("morgan");
+const sanitize = require("mongo-sanitize");
 const rateLimit = require("express-rate-limit");
 const config = require("./config/index");
+const logger = require("./utils/logger");
+
 const usersRouter = require("./routers/users.route");
 const servicesRouter = require("./routers/services.route");
 const bookingsRouter = require("./routers/bookings.route");
-const logger = require("./utils/logger");
-const sanitize = require("mongo-sanitize");
-const app = express();
+const adminRouter = require("./routers/admin.route");
 
+const app = express();
 app.use(morgan("dev"));
 app.use(helmet());
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
@@ -41,6 +43,7 @@ app.use("/api", limiter);
 app.use("/api/auth", usersRouter);
 app.use("/api/services", servicesRouter);
 app.use("/api/bookings", bookingsRouter);
+app.use("/api/admin", adminRouter);
 // route not found
 app.use((req, res) => {
   res.status(404).json({ status: "fail", msg: "Route not found" });

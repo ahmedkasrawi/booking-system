@@ -4,6 +4,7 @@ const { Booking } = require("../models/Booking");
 const { Service } = require("../models/Service");
 const bookingService = require("../services/bookingService")
 const { roles } = require("../constants/index")
+const getData = require("../utils/getData.js"); 
 // admin and provider only
 const getBookings = asyncWrapper(async (req, res, next) => {
   let filter = {};
@@ -146,17 +147,17 @@ const cancelMyBooking = asyncWrapper(async (req, res, next) => {
     message: "booking cancelled successfully",
   });
 });
-// admin only
-const deleteBooking = asyncWrapper(async (req, res, next) => {
-  const { id } = req.params;
-  const data = await Booking.findByIdAndDelete(id);
-  if (!data) {
-    return next(new appError("Booking not found", 404));
-  }
-  res
-    .status(200)
-    .json({ status: "success", message: "Booking deleted successfully" });
-});
+// admin only => change to best practice
+// const deleteBooking = asyncWrapper(async (req, res, next) => {
+//   const { id } = req.params;
+//   const data = await Booking.findByIdAndDelete(id);
+//   if (!data) {
+//     return next(new appError("Booking not found", 404));
+//   }
+//   res
+//     .status(200)
+//     .json({ status: "success", message: "Booking deleted successfully" });
+// });
 
 module.exports = {
   getBookings,
@@ -165,5 +166,4 @@ module.exports = {
   addBooking,
   updateBookingStatus,
   cancelMyBooking,
-  deleteBooking,
 };

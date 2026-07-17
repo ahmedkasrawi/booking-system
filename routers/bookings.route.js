@@ -8,13 +8,13 @@ const {
   createBookingSchema,
   updateBookingStatusSchema,
 } = require("../validators/bookingValidator");
+
 const {
   getBookings,
   getMyBookings,
   addBooking,
   updateBookingStatus,
   cancelMyBooking,
-  deleteBooking,
   getAvailableSlots,
 } = require("../controllers/booking.controller");
 
@@ -22,14 +22,17 @@ const {
 router.post(
   "/",
   verifyToken,
+  allowedTo(roles.user),
   validateMiddleware(createBookingSchema),
   addBooking,
 );
+
 router.get("/my", verifyToken, getMyBookings);
 router.patch("/cancel/:id", verifyToken, cancelMyBooking);
+router.get("/available-slots", getAvailableSlots);
 
 // admin and provider
-router.get("/available-slots", getAvailableSlots);
+
 router.get(
   "/",
   verifyToken,

@@ -13,6 +13,7 @@
   "type": "commonjs",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.10.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -25,6 +26,8 @@
     "mongo-sanitize": "^1.1.0",
     "mongoose": "^9.6.2",
     "morgan": "^1.10.1",
+    "multer": "^2.2.0",
+    "sharp": "^0.35.3",
     "winston": "^3.19.0"
   }
 }

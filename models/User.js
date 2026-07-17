@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const {roles} = require("../constants/index")
+const { roles } = require("../constants/index");
 
 const schema = mongoose.Schema;
 
@@ -29,11 +29,20 @@ const userSchema = new schema(
       enum: [roles.user, roles.provider, roles.admin],
       default: roles.user,
     },
+    img: {
+      type: String,
+    },
     specialization: {
       type: String,
+      enum: ["software engineer", "engineer", "manager"],
     },
     bio: {
       type: String,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "accepted", "blocked"],
+      default: "accepted",
     },
   },
   {
@@ -57,9 +66,9 @@ userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword,
 ) {
+  if (!candidatePassword || !userPassword) return false;
   return await bcrypt.compare(candidatePassword, userPassword);
 };
-
 
 module.exports = {
   User: mongoose.model("User", userSchema),

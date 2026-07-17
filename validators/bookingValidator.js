@@ -5,11 +5,6 @@ const objectIdPattern = /^[0-9a-fA-F]{24}$/;
 const timeSlotPattern = /^([0-1]?\d|2[0-3]):[0-5]\d$/;
 
 const createBookingSchema = Joi.object({
-  provider: Joi.string().pattern(objectIdPattern).required().messages({
-    "string.pattern.base": "Invalid provider ID.",
-    "any.required": "Provider ID is required.",
-  }),
-
   service: Joi.string().pattern(objectIdPattern).required().messages({
     "string.pattern.base": "Invalid service ID.",
     "any.required": "Service ID is required.",
