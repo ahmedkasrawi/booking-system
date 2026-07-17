@@ -36,7 +36,7 @@ exports.resizeImage = async (req, res, next) => {
       .toBuffer();
 
     next();
-  } catch (err) {
+  } catch {
     next(new appError("Image processing failed", 500));
   }
 };
