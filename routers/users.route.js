@@ -12,12 +12,13 @@ const {
   userToProvider,
   getAllProviders,
   getProvider,
+  updateMe,
 } = require("../controllers/users.controller");
 
 router.post("/register", validate(registerSchema), registerUser);
 router.post("/login", validate(loginSchema), loginUser);
 router.get("/provider", getAllProviders);
-router.get("/me", verifyToken, getMe);
+router.route("/me").get(verifyToken, getMe).patch(verifyToken, updateMe);
 router.patch("/provider", verifyToken, allowTo("user"), userToProvider);
 router.get("/provider/:id", getProvider);
 module.exports = router;

@@ -16,7 +16,7 @@ const getMe = asyncWrapper(async (req, res, next) => {
   });
 });
 const getProvider = asyncWrapper(async (req, res, next) => {
-  const data = await User.findById(req.params.id, { email :0});
+  const data = await User.findById(req.params.id, { email: 0 });
   if (!data) {
     return next(new appError("provider not found", 404));
   }
@@ -93,9 +93,23 @@ const registerUser = asyncWrapper(async (req, res, next) => {
 
   res.status(201).json({ status: "success", data: { user: newUser }, token });
 });
-const updateUser = asyncWrapper(async (req, res, next) => {
-  
-})
+const updateMe = asyncWrapper(async (req, res, next) => {
+  const { name, bio, specialization } = req.body;
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      name,
+      specialization,
+      bio,
+    },
+    { new: true },
+  );
+  if (!updatedUser) {
+    return next(new appError("something went wrong", 403));
+  }
+
+  res.status(200).json({ status: "success", data: { user: updatedUser } });
+});
 
 const userToProvider = asyncWrapper(async (req, res, next) => {
   const { specialization, bio } = req.body;
@@ -132,4 +146,5 @@ module.exports = {
   userToProvider,
   getAllProviders,
   getProvider,
+  updateMe,
 };
