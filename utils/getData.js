@@ -1,8 +1,13 @@
-const getData = async (req, filter, Model, populateOptions = null) => {
+const getData = async (
+  req,
+  filter,
+  Model,
+  populateOptions = null,
+) => {
   const limit = Number.parseInt(req.query.limit) || 10;
   const page = Number.parseInt(req.query.page) || 1;
   const skip = (page - 1) * limit;
-  let query = Model.find(filter, { __v: 0 })
+  let query = Model.find(filter)
     .sort("-createdAt")
     .limit(limit)
     .skip(skip);

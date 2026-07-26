@@ -5,7 +5,6 @@ const appError = require("../utils/appError");
 const { generateToken } = require("../utils/authUtil");
 const getData = require("../utils/getData");
 
-
 const getMe = asyncWrapper(async (req, res, next) => {
   const data = await User.findById(req.user.id);
   if (!data) {
@@ -14,6 +13,32 @@ const getMe = asyncWrapper(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: { user: data },
+  });
+});
+const getProvider = asyncWrapper(async (req, res, next) => {
+  const data = await User.findById(req.params.id, { email :0});
+  if (!data) {
+    return next(new appError("provider not found", 404));
+  }
+  res.status(200).json({
+    status: "success",
+    data: { provider: data },
+  });
+});
+const getAllProviders = asyncWrapper(async (req, res, next) => {
+  let filter = { role: "provider" };
+  if (req.query.specialization) {
+    filter.specialization = req.query.specialization;
+  }
+  const [data, pagination] = await getData(req, filter, User);
+  if (!data || !pagination) {
+    return next(new appError("something went wrong", 404));
+  }
+  res.status(200).json({
+    status: "success",
+    results: data.length,
+    pagination: pagination,
+    data: { users: data },
   });
 });
 const loginUser = asyncWrapper(async (req, res, next) => {
@@ -68,6 +93,9 @@ const registerUser = asyncWrapper(async (req, res, next) => {
 
   res.status(201).json({ status: "success", data: { user: newUser }, token });
 });
+const updateUser = asyncWrapper(async (req, res, next) => {
+  
+})
 
 const userToProvider = asyncWrapper(async (req, res, next) => {
   const { specialization, bio } = req.body;
@@ -97,11 +125,11 @@ const userToProvider = asyncWrapper(async (req, res, next) => {
     .json({ status: "success", data: { user: updatedUser }, token });
 });
 
-
-
 module.exports = {
   getMe,
   registerUser,
   loginUser,
   userToProvider,
+  getAllProviders,
+  getProvider,
 };
