@@ -1,7 +1,7 @@
 require("dotenv").config();
 module.exports = {
   port: process.env.PORT || 3001,
-  mongoUrl: process.env.MONGO_URL_LOCAL,
+  mongoUrl: process.env.MONGO_URL,
   jwtSecret: process.env.JWT_SECRET_KEY,
   jwtExpire: "7d",
   theRateLimit: {
