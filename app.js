@@ -24,7 +24,7 @@ app.use(
     credentials: true,
   }),
 );
-app.options("*", cors());
+
 app.use(express.json({ limit: "10kb" }));
 app.use((req, res, next) => {
   // تنظيف الـ body والـ params بشكل طبيعي
